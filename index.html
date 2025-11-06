@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Benchmark ? Prototype</title>
+    <meta name="description" content="Prototype UI to track and evaluate AI model benchmarks." />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <noscript>????? ??? ?????? ????? JavaScript.</noscript>
+
+    <header class="site-header glass">
+      <div class="container header-inner">
+        <div class="brand">
+          <img src="assets/logo.svg" alt="Benchmark" class="logo" />
+          <span class="brand-name">Benchmark</span>
+        </div>
+        <div class="header-actions">
+          <button id="toggle-theme" class="btn icon" aria-label="????? ????? ??????">
+            <img src="assets/icon-moon.svg" alt="Toggle" />
+          </button>
+          <button id="open-create-model" class="btn primary">????? ????</button>
+          <button id="open-create-test" class="btn secondary">?????? ????</button>
+        </div>
+      </div>
+      <nav class="tabs container" aria-label="?????? ???????">
+        <button class="tab active" data-view="dashboard">???? ??????</button>
+        <button class="tab" data-view="models">???????</button>
+        <button class="tab" data-view="tests">??????????</button>
+        <button class="tab" data-view="compare">????????</button>
+        <button class="tab" data-view="leaderboard">?????????</button>
+      </nav>
+    </header>
+
+    <main class="container main">
+      <!-- Dashboard -->
+      <section id="view-dashboard" class="view active" aria-labelledby="tab-dashboard">
+        <div class="grid cards-4">
+          <div class="card glass stat">
+            <div class="stat-label">??? ???????</div>
+            <div class="stat-value" id="stat-models">0</div>
+          </div>
+          <div class="card glass stat">
+            <div class="stat-label">??? ??????????</div>
+            <div class="stat-value" id="stat-tests">0</div>
+          </div>
+          <div class="card glass stat">
+            <div class="stat-label">?????? ???????</div>
+            <div class="stat-value" id="stat-runs">0</div>
+          </div>
+          <div class="card glass stat">
+            <div class="stat-label">?????? ?????</div>
+            <div class="stat-value" id="stat-avg">?</div>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="card glass">
+            <div class="card-header">
+              <h3>??????? ?????? ???????</h3>
+            </div>
+            <canvas id="scoreTrendChart" height="200" aria-label="???? ???????" role="img"></canvas>
+          </div>
+
+          <div class="card glass">
+            <div class="card-header">
+              <h3>??? ????????</h3>
+            </div>
+            <div class="table-wrap">
+              <table class="table" id="recent-runs-table">
+                <thead>
+                  <tr>
+                    <th>???????</th>
+                    <th>???????</th>
+                    <th>????????</th>
+                    <th>???????</th>
+                    <th>????? (???)</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Models -->
+      <section id="view-models" class="view" aria-labelledby="tab-models">
+        <div class="card glass">
+          <div class="card-header row">
+            <h3>???????</h3>
+            <div class="row gap-sm">
+              <input type="search" id="models-search" class="input" placeholder="????" />
+              <button id="open-create-model-2" class="btn primary">?????</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="table" id="models-table">
+              <thead>
+                <tr>
+                  <th data-sort="name">?????</th>
+                  <th data-sort="vendor">???????</th>
+                  <th data-sort="type">?????</th>
+                  <th data-sort="quality">?? ????</th>
+                  <th>???????</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tests -->
+      <section id="view-tests" class="view" aria-labelledby="tab-tests">
+        <div class="card glass">
+          <div class="card-header row">
+            <h3>??????????</h3>
+            <div class="row gap-sm">
+              <input type="search" id="tests-search" class="input" placeholder="????" />
+              <button id="open-create-test-2" class="btn primary">?????</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="table" id="tests-table">
+              <thead>
+                <tr>
+                  <th data-sort="name">?????</th>
+                  <th data-sort="category">?????</th>
+                  <th data-sort="difficulty">???????</th>
+                  <th data-sort="weight">?????</th>
+                  <th>???????</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Compare -->
+      <section id="view-compare" class="view" aria-labelledby="tab-compare">
+        <div class="card glass">
+          <div class="card-header">
+            <h3>????? ??????</h3>
+          </div>
+          <form id="compare-form" class="grid two form-grid">
+            <label class="field">
+              <span>??????? A</span>
+              <select id="compare-model-a" class="input"></select>
+            </label>
+            <label class="field">
+              <span>??????? B (???????)</span>
+              <select id="compare-model-b" class="input"></select>
+            </label>
+            <label class="field">
+              <span>????????</span>
+              <select id="compare-test" class="input"></select>
+            </label>
+            <div class="field">
+              <span>&nbsp;</span>
+              <button type="submit" class="btn primary">?????</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="grid two" id="compare-results" hidden>
+          <div class="card glass">
+            <div class="card-header"><h3>???????</h3></div>
+            <div class="results" id="results-summary"></div>
+          </div>
+          <div class="card glass">
+            <div class="card-header"><h3>????</h3></div>
+            <canvas id="compareChart" height="200"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Leaderboard -->
+      <section id="view-leaderboard" class="view" aria-labelledby="tab-leaderboard">
+        <div class="card glass">
+          <div class="card-header row">
+            <h3>???? ?????????</h3>
+            <div class="row gap-sm">
+              <label class="field inline">
+                <span>??????:</span>
+                <select id="leaderboard-test-filter" class="input"></select>
+              </label>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="table" id="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th data-sort="name">???????</th>
+                  <th data-sort="avg">???????</th>
+                  <th data-sort="best">???? ?????</th>
+                  <th data-sort="runs">??? ?????????</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Create Model Modal -->
+    <dialog id="modal-create-model" class="modal">
+      <form method="dialog" class="card glass modal-card" id="form-create-model">
+        <div class="card-header row">
+          <h3>????? ?????</h3>
+          <button class="btn icon" value="cancel" aria-label="?????">?</button>
+        </div>
+        <div class="grid two form-grid">
+          <label class="field">
+            <span>?????</span>
+            <input required class="input" name="name" placeholder="????: Falcon-7B" />
+          </label>
+          <label class="field">
+            <span>???????</span>
+            <input class="input" name="vendor" placeholder="OpenAI / Anthropic / Meta?" />
+          </label>
+          <label class="field">
+            <span>?????</span>
+            <select class="input" name="type">
+              <option value="LLM">LLM</option>
+              <option value="Vision">Vision</option>
+              <option value="Custom">Custom</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>?? ?????? (0-100)</span>
+            <input class="input" type="number" min="0" max="100" step="1" name="quality" value="60" />
+          </label>
+          <label class="field col-2">
+            <span>???????</span>
+            <textarea class="input" name="notes" rows="3" placeholder="?????? ???????"></textarea>
+          </label>
+        </div>
+        <div class="row end gap-sm">
+          <button class="btn" value="cancel">?????</button>
+          <button class="btn primary" value="default">???</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Create Test Modal -->
+    <dialog id="modal-create-test" class="modal">
+      <form method="dialog" class="card glass modal-card" id="form-create-test">
+        <div class="card-header row">
+          <h3>????? ??????</h3>
+          <button class="btn icon" value="cancel" aria-label="?????">?</button>
+        </div>
+        <div class="grid two form-grid">
+          <label class="field">
+            <span>?????</span>
+            <input required class="input" name="name" placeholder="????: MMLU" />
+          </label>
+          <label class="field">
+            <span>?????</span>
+            <select class="input" name="category">
+              <option value="QA">QA</option>
+              <option value="Reasoning">Reasoning</option>
+              <option value="Coding">Coding</option>
+              <option value="Vision">Vision</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>??????? (1-5)</span>
+            <input class="input" type="number" min="1" max="5" step="1" name="difficulty" value="3" />
+          </label>
+          <label class="field">
+            <span>?????</span>
+            <input class="input" type="number" min="1" max="10" step="1" name="weight" value="5" />
+          </label>
+        </div>
+        <div class="row end gap-sm">
+          <button class="btn" value="cancel">?????</button>
+          <button class="btn primary" value="default">???</button>
+        </div>
+      </form>
+    </dialog>
+
+    <footer class="site-footer container">
+      <span>? <span id="year"></span> Benchmark Prototype</span>
+    </footer>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
